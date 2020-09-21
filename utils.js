@@ -4,7 +4,9 @@ const config = require("./config");
 const getToken = (user) => {
   return jwt.sign(
     {
-      ...user,
+      _id: user.id,
+      username: user.username,
+      password: user.password,
     },
     config.JWT_SECRET,
     {
