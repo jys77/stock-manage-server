@@ -3,13 +3,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 const config = require("./config");
-
 const userRoute = require("./routes/userRoute");
 
-const app = express();
-
 const mongodbUrl = config.MONGODB_URL;
-
 mongoose
   .connect(mongodbUrl, {
     useNewUrlParser: true,
@@ -19,6 +15,7 @@ mongoose
     console.log(err.reason);
   });
 
+const app = express();
 app.use(bodyParser.json());
 app.use("/api/users", userRoute);
 app.get("/", (req, res) => {
