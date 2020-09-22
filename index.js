@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const path = require("path");
 const config = require("./config");
 const userRoute = require("./routes/userRoute");
+const inventoryRoute = require("./routes/inventoryRoute");
 
 const mongodbUrl = config.MONGODB_URL;
 mongoose
@@ -18,6 +18,7 @@ mongoose
 const app = express();
 app.use(bodyParser.json());
 app.use("/api/users", userRoute);
+app.use("/api/inventories", inventoryRoute);
 app.get("/", (req, res) => {
   res.send("hello");
 });

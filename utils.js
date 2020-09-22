@@ -15,6 +15,24 @@ const getToken = (user) => {
   );
 };
 
+const isAuth = (req, res, next) => {
+  const token = req.headers.authorization;
+  if (token) {
+    const onlyToken = token.slice(7);
+    jwt.verify(onlyToken, config.JWT_SECRET, (err, decode) => {
+      if (err) {
+        return res.status(401).send({ msg: "用户token错误！" });
+      }
+      req.user = decode;
+      next();
+      return;
+    });
+  } else {
+    return res.status(401).send({ msg: "您无权进行操作！" });
+  }
+};
+
 module.exports = {
-  getToken: getToken,
+  getToken,
+  isAuth,
 };
