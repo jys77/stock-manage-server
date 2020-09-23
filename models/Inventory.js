@@ -28,5 +28,7 @@ const inventorySchema = mongoose.Schema({
   },
 });
 
+inventorySchema.set("timestamps", true);
+
 const inventoryModal = mongoose.model("Inventory", inventorySchema);
 module.exports = inventoryModal;

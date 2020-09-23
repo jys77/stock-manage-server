@@ -20,9 +20,65 @@ router.post("/add", isAuth, (req, res) => {
 });
 
 router.get("/", isAuth, (req, res) => {
-  Inventory.find({}).then((items) => {
-    res.send(items);
-  });
+  Inventory.find({})
+    .sort({ createdAt: -1 })
+    .then((items) => {
+      res.send(items);
+    })
+    .catch((err) => {
+      res.send([]);
+    });
+});
+
+router.get("/categories", (req, res) => {
+  Inventory.find({}, { category: 1 })
+    .distinct("category")
+    .then((cats) => {
+      const newCats = cats.map((cat) => {
+        return {
+          text: cat,
+          value: cat,
+        };
+      });
+      res.send(newCats);
+    })
+    .catch((err) => {
+      res.send([]);
+    });
+});
+
+router.get("/brands", (req, res) => {
+  Inventory.find({}, { brand: 1 })
+    .distinct("brand")
+    .then((brands) => {
+      const newBrands = brands.map((brand) => {
+        return {
+          text: brand,
+          value: brand,
+        };
+      });
+      res.send(newBrands);
+    })
+    .catch((err) => {
+      res.send([]);
+    });
+});
+
+router.get("/names", (req, res) => {
+  Inventory.find({}, { name: 1 })
+    .distinct("name")
+    .then((names) => {
+      const newNames = names.map((name) => {
+        return {
+          text: name,
+          value: name,
+        };
+      });
+      res.send(newNames);
+    })
+    .catch((err) => {
+      res.send([]);
+    });
 });
 
 module.exports = router;
