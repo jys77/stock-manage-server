@@ -20,7 +20,7 @@ router.post("/add", isAuth, (req, res) => {
 });
 
 router.get("/", isAuth, (req, res) => {
-  Inventory.find({})
+  Inventory.find({ valid: true })
     .sort({ createdAt: -1 })
     .then((items) => {
       res.send(items);
@@ -28,6 +28,29 @@ router.get("/", isAuth, (req, res) => {
     .catch((err) => {
       res.send([]);
     });
+});
+
+router.put("/:id", isAuth, async (req, res) => {
+  const itemId = req.params.id;
+  const item = await Inventory.findById(itemId);
+  if (item) {
+    item.name = req.body.name || item.name;
+    item.unit = req.body.unit || item.unit;
+    item.category = req.body.category || item.category;
+    item.brand = req.body.brand || item.brand;
+    item.model = req.body.model || item.model;
+    item.stock = req.body.stock || item.stock;
+    item.valid = req.body.valid;
+    item.updatedAt = new Date();
+
+    const updatedItem = await item.save();
+    res.status(201).send({
+      msg: "商品修改成功！",
+      updatedItem,
+    });
+  } else {
+    res.status(401).send({ msg: "资料更新失败！" });
+  }
 });
 
 router.get("/categories", (req, res) => {
