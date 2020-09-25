@@ -36,4 +36,4 @@ router.get("/", isAuth, async (req, res) => {
   }
 });
 
-export const router;
+module.exports = router;
