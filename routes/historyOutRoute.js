@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/:id", isAuth, async (req, res) => {
   const itemId = req.params.id;
-  const newOut = new HistoryIn({
+  const newOut = new HistoryOut({
     inventory: itemId,
     priceOut: req.body.priceOut,
     count: req.body.count,
@@ -14,7 +14,7 @@ router.post("/:id", isAuth, async (req, res) => {
   });
   const savedOut = await newOut.save();
   const item = await Inventory.findById(itemId);
-  item.stock += req.body.count;
+  item.stock -= req.body.count;
   const savedItem = await item.save();
 
   if (savedOut && savedItem) {

@@ -25,6 +25,7 @@ router.get("/", isAuth, async (req, res) => {
         value: result._id,
         text: `${result.category}: ${result.brand}${result.model} ${result.name}`,
         stock: result.stock,
+        unit: result.unit,
       };
     });
     res.send(newResults);

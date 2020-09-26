@@ -27,12 +27,54 @@ router.post("/:id", isAuth, async (req, res) => {
   }
 });
 
-router.get("/", isAuth, async (req, res) => {
-  const ins = await HistoryIn({}).sort({ timeIn: -1 });
-  if (ins) {
-    res.send(ins);
+// router.get("/", isAuth, async (req, res) => {
+//   const ins = await HistoryIn.find({}).sort({ timeIn: -1 });
+//   if (ins) {
+//     res.send(ins);
+//   } else {
+//     res.status(401).send({ msg: "获取入库历史记录失败！" });
+//   }
+// });
+
+router.get("/", async (req, res) => {
+  const start = req.query.start;
+  const end = req.query.end;
+  const history = await HistoryIn.aggregate([
+    {
+      $lookup: {
+        from: Inventory.collection.name,
+        localField: "inventory",
+        foreignField: "_id",
+        as: "infos",
+      },
+    },
+    {
+      $match: {
+        timeIn: {
+          $gte: new Date(start),
+          $lt: new Date(end),
+        },
+      },
+    },
+  ]);
+
+  if (history && history !== []) {
+    const results = history.map((item) => {
+      return {
+        _id: item._id,
+        inventory: item.inventory,
+        priceIn: item.priceIn,
+        count: item.count,
+        timeIn: item.timeIn,
+        name: item.infos[0].name ? item.infos[0].name : "",
+        category: item.infos[0].category ? item.infos[0].category : "",
+        brand: item.infos[0].brand ? item.infos[0].brand : "",
+        model: item.infos[0].model ? item.infos[0].model : "",
+      };
+    });
+    res.send(results);
   } else {
-    res.status(401).send({ msg: "获取入库历史记录失败！" });
+    res.send([]);
   }
 });
 
