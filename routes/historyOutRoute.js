@@ -70,4 +70,32 @@ router.get("/", isAuth, async (req, res) => {
   }
 });
 
+router.get("/stats", isAuth, async (req, res) => {
+  const stats = await HistoryOut.aggregate([
+    {
+      $project: {
+        day: {
+          $substr: ["$timeOut", 0, 10],
+        },
+        priceOut: 1,
+        count: 1,
+      },
+    },
+    {
+      $group: {
+        _id: "$day",
+        total: { $sum: { $multiply: ["$priceOut", "$count"] } },
+      },
+    },
+    {
+      $sort: { _id: -1 },
+    },
+  ]);
+  if (stats) {
+    res.send(stats.reverse());
+  } else {
+    res.send([]);
+  }
+});
+
 module.exports = router;
