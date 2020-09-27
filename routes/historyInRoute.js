@@ -27,15 +27,6 @@ router.post("/:id", isAuth, async (req, res) => {
   }
 });
 
-// router.get("/", isAuth, async (req, res) => {
-//   const ins = await HistoryIn.find({}).sort({ timeIn: -1 });
-//   if (ins) {
-//     res.send(ins);
-//   } else {
-//     res.status(401).send({ msg: "获取入库历史记录失败！" });
-//   }
-// });
-
 router.get("/", async (req, res) => {
   const start = req.query.start;
   const end = req.query.end;
@@ -56,7 +47,7 @@ router.get("/", async (req, res) => {
         },
       },
     },
-  ]);
+  ]).sort({ timeIn: -1 });
 
   if (history && history !== []) {
     const results = history.map((item) => {
@@ -70,6 +61,7 @@ router.get("/", async (req, res) => {
         category: item.infos[0].category ? item.infos[0].category : "",
         brand: item.infos[0].brand ? item.infos[0].brand : "",
         model: item.infos[0].model ? item.infos[0].model : "",
+        unit: item.infos[0].unit ? item.infos[0].unit : "",
       };
     });
     res.send(results);

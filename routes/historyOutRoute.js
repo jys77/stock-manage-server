@@ -28,11 +28,45 @@ router.post("/:id", isAuth, async (req, res) => {
 });
 
 router.get("/", isAuth, async (req, res) => {
-  const ins = await HistoryOut({}).sort({ timeOut: -1 });
-  if (ins) {
-    res.send(ins);
+  const start = req.query.start;
+  const end = req.query.end;
+  const history = await HistoryOut.aggregate([
+    {
+      $lookup: {
+        from: Inventory.collection.name,
+        localField: "inventory",
+        foreignField: "_id",
+        as: "infos",
+      },
+    },
+    {
+      $match: {
+        timeOut: {
+          $gte: new Date(start),
+          $lt: new Date(end),
+        },
+      },
+    },
+  ]).sort({ timeOut: -1 });
+
+  if (history && history !== []) {
+    const results = history.map((item) => {
+      return {
+        _id: item._id,
+        inventory: item.inventory,
+        priceOut: item.priceOut,
+        count: item.count,
+        timeOut: item.timeOut,
+        name: item.infos[0].name ? item.infos[0].name : "",
+        category: item.infos[0].category ? item.infos[0].category : "",
+        brand: item.infos[0].brand ? item.infos[0].brand : "",
+        model: item.infos[0].model ? item.infos[0].model : "",
+        unit: item.infos[0].unit ? item.infos[0].unit : "",
+      };
+    });
+    res.send(results);
   } else {
-    res.status(401).send({ msg: "获取售出历史记录失败！" });
+    res.send([]);
   }
 });
 
