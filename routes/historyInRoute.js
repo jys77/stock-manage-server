@@ -27,7 +27,7 @@ router.post("/:id", isAuth, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", isAuth, async (req, res) => {
   const start = req.query.start;
   const end = req.query.end;
   const history = await HistoryIn.aggregate([
