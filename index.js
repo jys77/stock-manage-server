@@ -25,9 +25,6 @@ app.use("/api/inventories", inventoryRoute);
 app.use("/api/search", searchRoute);
 app.use("/api/in", historyInRoute);
 app.use("/api/out", historyOutRoute);
-app.get("/", (req, res) => {
-  res.send("hello");
-});
 
 app.listen(config.PORT, () => {
   console.log(`Server is up on port ${config.PORT}`);
